@@ -1,16 +1,24 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const data = require('../data');
+
 const User = require('../models/userModel');
+const UserRole = require('../models/userRoleModel');
 
-const userRouter = express.Router();
+router.get('/seed/roles', async (req, res) => {
+    await UserRole.deleteMany({});
+    const createdUserRoles = await UserRole.insertMany(data.userRoles);
+    res.send({ createdUserRoles });
+  }
+);
 
-// userRouter.get('/seed', async (req, res) => {
-//     // await User.remove({});
-//     const createdUsers = await User.insertMany(data.users);
-//     res.send({ createdUsers });
-//   }
-// );
+router.get('/seed/users', async (req, res) => {
+    await User.deleteMany({});
+    const createdUsers = await User.insertMany(data.users);
+    res.send({ createdUsers });
+  }
+);
 
 router.post("/signup", async (req, res) => {
   try {
@@ -24,19 +32,21 @@ router.post("/signup", async (req, res) => {
       }
     );
     const createdUser = await user.save();
-    console.log("hello");
-    res.send(createdUser
-    //   {
-    //   _id: createdUser._id,
-    //   firstName: createdUser.firstName,
-    //   lastName: createdUser.lastName,
-    //   email: createdUser.email,
-    //   userRole: createdUser.userRole
-    // }
+    res.send(
+      {
+        _id: createdUser._id,
+        firstName: createdUser.firstName,
+        lastName: createdUser.lastName,
+        email: createdUser.email,
+        userRole: createdUser.userRole
+      }
     );
   }
-  catch(err) {
+  catch (err) {
     console.log(err);
+    res.status(400).json({
+      message: "User with this email already exists.",
+    });
   }
 });
 
