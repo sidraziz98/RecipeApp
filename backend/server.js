@@ -1,24 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const UserRole = require('./models/userRoleModel');
-
 const userRoutes = require('./routes/userRoutes');
 
 dotenv.config();
 
-// UserRole.create({
-//     _id: 1,
-//     role: 'admin'
-// },{
-//     _id: 2,
-//     role: 'user'
-// }
-// );
-
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 
 mongoose.connect(process.env.MONGODB_URL, {
     useNewUrlParser: true,
@@ -36,6 +25,22 @@ app.use('/api/user', userRoutes);
 
 app.get('/', (req, res) => {
     res.send('Server is ready');
+});
+
+//Handle any errors
+app.use((req, res, next) => {
+    const err = new Error('Page Not Found');
+    err.status = 404;
+    next(err);
+});
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(err.status || 500).send({
+        error: {
+            status: err.status || 500,
+            message: err.message || "Error"
+        }
+    });
 });
 
 const port = process.env.PORT || 5000;

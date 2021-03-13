@@ -4,7 +4,7 @@ const generateToken = (id) => {
     return jwt.sign(
         { id },
         process.env.JWT_SECRET,
-         { expiresIn: '30m' }
+        { expiresIn: '30m' }
     );
 };
 
@@ -17,7 +17,7 @@ const isAuth = (req, res, next) => {
             process.env.JWT_SECRET,
             (err, decode) => {
                 if (err) {
-                    res.status(401).send({ message: 'Invalid Token' });
+                    res.status(401).send(jsonResponse(null, 'Invalid Token' ));
                 } else {
                     req.id = decode.id;
                     next();
@@ -25,8 +25,22 @@ const isAuth = (req, res, next) => {
             }
         );
     } else {
-        res.status(401).send({ message: 'No Token' });
+        res.status(401).send(jsonResponse(null, 'No Token' ));
     }
 };
 
-module.exports = { generateToken : generateToken, isAuth : isAuth };
+const jsonResponse = (body, message) => {
+    if (body) {
+        return {
+            header: { error: 0, message },
+            body
+        };
+    }
+    else {
+        return {
+            header: { error: 1, message }
+        };
+    }
+};
+
+module.exports = { generateToken: generateToken, isAuth: isAuth, jsonResponse: jsonResponse };

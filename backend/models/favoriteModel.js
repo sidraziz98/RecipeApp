@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 
-const userRecipeRelationSchema = new mongoose.Schema(
+const favoriteSchema = new mongoose.Schema(
     {
-        relationType: { type: String },
         user: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
@@ -11,8 +10,11 @@ const userRecipeRelationSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Recipe',
         },
+    },
+    {
+        timestamps: true,
     }
 );
 
-const UserRecipeRelation = mongoose.model("UserRecipeRelation", userRecipeRelationSchema, "UserRecipeRelations");
-module.exports = UserRecipeRelation;
+const Favorite = mongoose.model("Favorite", favoriteSchema, "Favorites");
+module.exports = Favorite;

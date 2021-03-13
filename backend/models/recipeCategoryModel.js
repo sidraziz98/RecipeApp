@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
 
-const ratingSchema = new mongoose.Schema(
+const recipeCategorySchema = new mongoose.Schema(
     {
-        rating: Number,
-        user: {
+        ingredient: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
+            ref: 'Category',
         },
         recipe: {
             type: mongoose.Schema.Types.ObjectId,
@@ -17,5 +16,5 @@ const ratingSchema = new mongoose.Schema(
     }
 );
 
-const Rating = mongoose.model("Rating", ratingSchema, "Ratings");
-module.exports = Rating;
+const RecipeCategories = mongoose.model("RecipeCategory", recipeCategorySchema, "RecipeCategories");
+module.exports = RecipeCategories;
