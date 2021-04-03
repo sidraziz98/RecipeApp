@@ -3,11 +3,42 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const data = require('../data');
 const utils = require('../utils');
+
 const generateToken = utils.generateToken;
 const isAuth = utils.isAuth;
 const jsonResponse = utils.jsonResponse;
+
 const User = require('../models/userModel');
 const UserRole = require('../models/userRoleModel');
+
+const multer = require('multer');
+// const upload = multer({dest: 'backend/uploads/'});
+
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, './backend/uploads/');
+  },
+  filename: function(req, file, cb) {
+    cb(null, new Date().toISOString() + file.originalname);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  // reject a file
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true);
+  } else {
+    cb(new Error('Incorrect File Type'), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5
+  },
+  fileFilter: fileFilter
+});
 
 router.get('/seed/roles', async (req, res) => {
   await UserRole.deleteMany({});
@@ -23,7 +54,7 @@ router.get('/seed/users', async (req, res) => {
 }
 );
 
-router.post("/signup", async (req, res) => {
+router.post("/signup", upload.single('image'), async (req, res) => {
   try {
     if (req.body.firstName && req.body.lastName && req.body.email && req.body.password) {
       const userExist = await User.findOne({ email: req.body.email });
@@ -35,7 +66,8 @@ router.post("/signup", async (req, res) => {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email,
-            password: bcrypt.hashSync(req.body.password, 8)
+            password: bcrypt.hashSync(req.body.password, 8),
+            image: req.file.path
           }
         );
         const createdUser = await user.save();
