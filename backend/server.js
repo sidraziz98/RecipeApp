@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const userRoutes = require('./routes/userRoutes');
+const recipeRoutes = require('./routes/recipeRoutes');
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ mongoose.connect(process.env.MONGODB_URL, {
 );
 
 app.use('/api/user', userRoutes);
+app.use('/api/recipe', recipeRoutes);
 
 app.get('/', (req, res) => {
     res.send('Server is ready');

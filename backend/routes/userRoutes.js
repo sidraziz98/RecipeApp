@@ -2,17 +2,12 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const data = require('../data');
-const utils = require('../utils');
-
-const generateToken = utils.generateToken;
-const isAuth = utils.isAuth;
-const jsonResponse = utils.jsonResponse;
+const { isAuth, generateToken, jsonResponse } = require('../utils');
 
 const User = require('../models/userModel');
 const UserRole = require('../models/userRoleModel');
 
 const multer = require('multer');
-// const upload = multer({dest: 'backend/uploads/'});
 
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
@@ -103,7 +98,6 @@ router.post("/login", async (req, res) => {
             token: generateToken(user._id),
           };
           res.status(201).json(jsonResponse(sendUser, "Login Successful"));
-          return;
         }
       }
       res.status(401).send(jsonResponse(null, 'Invalid email or password'));

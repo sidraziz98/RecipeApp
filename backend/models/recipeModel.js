@@ -4,19 +4,21 @@ const recipeSchema = new mongoose.Schema(
     {
         title: { type: String, required: true },
         description: { type: String },
-        duration: { type: String, required: true },
+        duration: { type: Number, required: true },
         // ingredients: [{ type: String }],
-        instructions: [{ type: String }],
+        instructions: [{ type: String, required: true }],
         rating: { type: Number, default: 0 },
+        image: { type: String },
         // category: {
         //     type: mongoose.Schema.Types.ObjectId,
         //     ref: 'Category'
         // },
-        isPublic: { type: Boolean },
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
+            ref: 'User',
+            required: true
         },
+        isPublic: { type: Boolean, default: false },
     },
     {
         timestamps: true,

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const recipeCategorySchema = new mongoose.Schema(
     {
-        ingredient: {
+        category: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Category',
         },
