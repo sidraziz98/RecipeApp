@@ -4,7 +4,7 @@ const data = require('../data');
 const utils = require('../utils');
 
 const Recipe = require('../models/recipeModel');
-const RecipeIngredient = require('../models/recipeIngredientsModel');
+const RecipeIngredient = require('../models/recipeIngredientModel');
 const { isAuth, jsonResponse } = require('../utils');
 
 router.get('/seed/recipes', isAuth, async (req, res) => {
@@ -46,22 +46,23 @@ router.post('/add', isAuth, async (req, res) => {
 router.get('/:id', isAuth, async (req, res) => {
     try {
         const recipe = await Recipe.findById(req.params.id).populate('createdBy');
-        // const ingredients = await 
         if (recipe) {
+            const ingredients = await RecipeIngredient.find({ userId: req.id });
             const sendRecipe = {
                 _id: recipe._id,
                 title: recipe.title,
                 duration: recipe.duration,
                 description: recipe.description,
+                ingredients: ingredients,
                 instructions: recipe.instructions,
                 image: recipe.image,
                 rating: recipe.rating,
                 createdBy: recipe.createdBy.firstName + " " + recipe.createdBy.lastName,
                 isPublic: recipe.isPublic
             };
-            res.status(201).json(jsonResponse(sendRecipe, "Recipe retreival successful"))
+            res.status(201).json(jsonResponse(sendRecipe, "Recipe retreival successful"));
         }
-        else{
+        else {
             res.status(401).send(jsonResponse(null, 'Recipe not found'));
         }
     }

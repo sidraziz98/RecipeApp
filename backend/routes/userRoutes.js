@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
     cb(null, './backend/uploads/');
   },
   filename: function(req, file, cb) {
-    cb(null, new Date().toISOString() + file.originalname);
+    cb(null, new Date().toString() + file.originalname);
   }
 });
 
@@ -95,6 +95,7 @@ router.post("/login", async (req, res) => {
             lastName: user.lastName,
             userRole: user.userRole,
             email: user.email,
+            image: user.image,
             token: generateToken(user._id),
           };
           res.status(201).json(jsonResponse(sendUser, "Login Successful"));
@@ -132,7 +133,7 @@ router.get('/profile', isAuth, async (req, res) => {
   }
 });
 
-router.put('/profile', isAuth, async (req, res) => {
+router.put('/profile', isAuth, upload.single('image'), async (req, res) => {
   try {
     const user = await User.findById(req.id);
     if (user) {
@@ -141,6 +142,7 @@ router.put('/profile', isAuth, async (req, res) => {
       if (req.body.password) {
         user.password = bcrypt.hashSync(req.body.password, 8);
       }
+      user.image = req.file.path;
       const updatedUser = await user.save();
       res.status(201).json(jsonResponse(updatedUser, "Update profile successful"));      
     }
