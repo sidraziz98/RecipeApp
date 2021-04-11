@@ -16,21 +16,21 @@ const data = {
             firstName: "Zoha",
             lastName: "Imran",
             email: "zoha@gmail.com",
-            password: bcrypt.hashSync('12345', 8),
+            password: bcrypt.hashSync('12345678', 8),
             userRole: 1
         },
         {
             firstName: "Sidra",
             lastName: "Aziz",
             email: "sidraziz98@gmail.com",
-            password: bcrypt.hashSync('12345', 8),
+            password: bcrypt.hashSync('12345678', 8),
             userRole: 1
         },
         {
             firstName: "Sarah",
             lastName: "Imran",
             email: "sarah@gmail.com",
-            password: bcrypt.hashSync('12345', 8),
+            password: bcrypt.hashSync('12345678', 8),
             userRole: 1
         },
     ],

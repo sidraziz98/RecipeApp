@@ -29,11 +29,11 @@ const isAuth = (req, res, next) => {
     }
 };
 
-const jsonResponse = (data, message) => {
-    if (data) {
+const jsonResponse = (body, message) => {
+    if (body) {
         return {
             header: { error: 0, message },
-            data
+            body
         };
     }
     else {

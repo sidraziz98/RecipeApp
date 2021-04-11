@@ -10,10 +10,10 @@ const UserRole = require('../models/userRoleModel');
 const multer = require('multer');
 
 const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
+  destination: function (req, file, cb) {
     cb(null, './backend/uploads/');
   },
-  filename: function(req, file, cb) {
+  filename: function (req, file, cb) {
     cb(null, new Date().toISOString() + file.originalname);
   }
 });
@@ -49,7 +49,7 @@ router.get('/seed/users', async (req, res) => {
 }
 );
 
-router.post("/signup", upload.single('image'), async (req, res) => {
+router.post("/signup", async (req, res) => {//upload.single('image'),
   try {
     if (req.body.firstName && req.body.lastName && req.body.email && req.body.password) {
       const userExist = await User.findOne({ email: req.body.email });
@@ -62,10 +62,11 @@ router.post("/signup", upload.single('image'), async (req, res) => {
             lastName: req.body.lastName,
             email: req.body.email,
             password: bcrypt.hashSync(req.body.password, 8),
-            image: req.file.path
+            // image: req.file.path
           }
         );
         const createdUser = await user.save();
+        console.log(createdUser);
         res.status(201).json(jsonResponse(createdUser, "Signup Successful"));
       }
     }
@@ -101,7 +102,9 @@ router.post("/login", async (req, res) => {
           res.status(201).json(jsonResponse(sendUser, "Login Successful"));
         }
       }
-      res.status(401).send(jsonResponse(null, 'Invalid email or password'));
+      else {
+        res.status(401).send(jsonResponse(null, 'Invalid email or password'));
+      }
     }
     else {
       res.status(401).send(jsonResponse(null, 'Email or password missing'));
@@ -144,7 +147,7 @@ router.put('/profile', isAuth, upload.single('image'), async (req, res) => {
       }
       user.image = req.file.path;
       const updatedUser = await user.save();
-      res.status(201).json(jsonResponse(updatedUser, "Update profile successful"));      
+      res.status(201).json(jsonResponse(updatedUser, "Update profile successful"));
     }
   } catch (err) {
     console.log(err);

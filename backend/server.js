@@ -3,15 +3,24 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const userRoutes = require('./routes/userRoutes');
 const recipeRoutes = require('./routes/recipeRoutes');
+const cors = require('cors');
 
 dotenv.config();
 
 const app = express();
-app.use(express.static('backend/uploads'))
+app.use(
+    cors({
+        origin: "*",
+        methods: ["GET", "POST", "DELETE", "PATCH", "PUT"],
+        allowedHeaders:
+            "Allow-Control-Allow-Origin, Content-Type, Authorization, Origin, X-Requested-With, Accept",
+    })
+);
+app.use(express.static('backend/uploads'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-mongoose.connect(process.env.MONGODB_URL, {
+mongoose.connect(process.env.MONGODB_URL || "mongodb://localhost/RecipeDB", {
     useNewUrlParser: true,
     useUnifiedTopology: true
 },
