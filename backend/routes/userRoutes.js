@@ -10,11 +10,12 @@ const UserRole = require('../models/userRoleModel');
 const multer = require('multer');
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './backend/uploads/');
-  },
+  // destination: function (req, file, cb) {
+  //   cb(null, './backend/uploads/');
+  // },
+  destination: __dirname+'../../uploads',
   filename: function (req, file, cb) {
-    cb(null, new Date().toISOString() + file.originalname);
+    cb(null, new Date().getTime() + file.originalname);
   }
 });
 
@@ -49,8 +50,9 @@ router.get('/seed/users', async (req, res) => {
 }
 );
 
-router.post("/signup", async (req, res) => {//upload.single('image'),
+router.post("/signup", upload.single('image'),async (req, res) => {//upload.single('image'),
   try {
+    console.log(req.body.firstName);
     if (req.body.firstName && req.body.lastName && req.body.email && req.body.password) {
       const userExist = await User.findOne({ email: req.body.email });
       if (userExist) {
@@ -62,7 +64,7 @@ router.post("/signup", async (req, res) => {//upload.single('image'),
             lastName: req.body.lastName,
             email: req.body.email,
             password: bcrypt.hashSync(req.body.password, 8),
-            // image: req.file.path
+            image: req.file.path
           }
         );
         const createdUser = await user.save();
