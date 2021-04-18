@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const userRoutes = require('./routes/userRoutes');
 const recipeRoutes = require('./routes/recipeRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const cors = require('cors');
 
 dotenv.config();
@@ -34,6 +35,7 @@ mongoose.connect(process.env.MONGODB_URL || "mongodb://localhost/RecipeDB", {
 
 app.use('/api/user', userRoutes);
 app.use('/api/recipe', recipeRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.get('/', (req, res) => {
     res.send('Server is ready');

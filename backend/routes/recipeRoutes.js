@@ -16,6 +16,22 @@ router.get('/seed/recipes', isAuth, async (req, res) => {
     res.send({ createdRecipes });
 });
 
+router.get('/', async (req, res) => {
+    try {
+        const recipes = await Recipe.find().populate({ path: 'createdBy', select: 'firstName -_id' });
+        if (recipes.length > 0) {
+            res.status(201).json(jsonResponse(recipes, "Recipes retreival successful"));
+        }
+        else {
+            res.status(401).json(jsonResponse(null, "No recipes found"));
+        }
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json(jsonResponse(null, err.message));
+    }
+});
+
 router.post('/add', isAuth, async (req, res) => {
     try {
         if (req.body.title && req.body.duration && req.body.instructions) {
@@ -25,7 +41,7 @@ router.post('/add', isAuth, async (req, res) => {
                     duration: req.body.duration,
                     description: req.body.description,
                     instructions: req.body.instructions,
-                    image: req.file.path,
+                    // image: NULL || req.file.path,
                     createdBy: req.id,
                     isPublic: req.body.isPublic
                 }
@@ -67,21 +83,45 @@ router.get('/:id', isAuth, async (req, res) => {
         }
     }
     catch (err) {
+        console.log(err);
         res.status(500).json(jsonResponse(null, err.message));
     }
 });
 
-router.get('/allrecipes', isAuth, async (req, res) => {
+// @desc    Update Recipe by Id
+// @route   PUT /api/tag/:id
+router.put('/:id', isAuth, async (req, res) => {
     try {
-        const recipes = await Recipe.find().populate({ path: 'createdBy', select: 'firstName -_id' });
-        if (recipes.length > 0) {
-            res.status(201).json(jsonResponse(recipes, "Recipes retreival successful"));
+        const id = req.params.id;
+        const recipeUser = await Recipe.findById(id);
+        if (req.id == recipeUser.createdBy) {
+            const update = req.body;
+            await Recipe.findByIdAndUpdate(id, update, {
+                useFindAndModify: false,
+            });
+            const recipe = await Recipe.findById(id);
+            res.status(201).json(jsonResponse(recipe, "Recipe has been updated"));
+        } else {
+            res.status(401).json(jsonResponse(null, "You do not have permission to update the recipe!"));
         }
-        else {
-            res.status(401).json(jsonResponse(null, "No recipes found"));
-        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(jsonResponse(null, err.message));
     }
-    catch (err) {
+});
+
+//delete Recipe
+router.delete('/:id', async (req, res) => {
+    try {
+        const recipe = await Recipe.findById(req.params.id);
+
+        if (recipe) {
+            await recipe.remove();
+            res.status(401).json(jsonResponse(recipe, "Recipe removed"));
+        } else {
+            res.status(401).json(jsonResponse(null, "Recipe not found"));
+        }
+    } catch (err) {
         console.log(err);
         res.status(500).json(jsonResponse(null, err.message));
     }

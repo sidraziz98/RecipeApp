@@ -52,7 +52,6 @@ router.get('/seed/users', async (req, res) => {
 
 router.post("/signup", upload.single('image'),async (req, res) => {//upload.single('image'),
   try {
-    console.log(req.body.firstName);
     if (req.body.firstName && req.body.lastName && req.body.email && req.body.password) {
       const userExist = await User.findOne({ email: req.body.email });
       if (userExist) {
