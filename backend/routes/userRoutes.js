@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
   // destination: function (req, file, cb) {
   //   cb(null, './backend/uploads/');
   // },
-  destination: __dirname+'../../uploads',
+  destination: __dirname + '../../uploads',
   filename: function (req, file, cb) {
     cb(null, new Date().getTime() + file.originalname);
   }
@@ -50,7 +50,7 @@ router.get('/seed/users', async (req, res) => {
 }
 );
 
-router.post("/signup", upload.single('image'),async (req, res) => {//upload.single('image'),
+router.post("/signup", upload.single('image'), async (req, res) => {
   try {
     if (req.body.firstName && req.body.lastName && req.body.email && req.body.password) {
       const userExist = await User.findOne({ email: req.body.email });
@@ -63,11 +63,13 @@ router.post("/signup", upload.single('image'),async (req, res) => {//upload.sing
             lastName: req.body.lastName,
             email: req.body.email,
             password: bcrypt.hashSync(req.body.password, 8),
-            image: req.file.path
+            // image: req.file.path
           }
         );
+        if (req.file) {
+          user.image = req.file.path;
+        }
         const createdUser = await user.save();
-        console.log(createdUser);
         res.status(201).json(jsonResponse(createdUser, "Signup Successful"));
       }
     }
@@ -84,7 +86,7 @@ router.post("/signup", upload.single('image'),async (req, res) => {//upload.sing
 router.post("/login", async (req, res) => {
   try {
     if (req.body.email && req.body.password) {
-      const user = await User.findOne({ email: req.body.email });
+      const user = await User.findOne({ email: req.body.email }).populate({ path: 'userRole', select: 'role -_id' });
       if (user) {
         const validPass = bcrypt.compareSync(
           req.body.password,
@@ -118,13 +120,14 @@ router.post("/login", async (req, res) => {
 
 router.get('/profile', isAuth, async (req, res) => {
   try {
-    const user = await User.findById(req.id).populate('userRole');
+    const user = await User.findById(req.id).populate({ path: 'userRole', select: 'role -_id' });
     if (user) {
       const sendUser = {
         _id: user._id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
+        image: user.image,
         userRole: user.userRole['role'],
       };
       res.status(201).json(jsonResponse(sendUser, "Profile retreival successful"));
@@ -146,9 +149,15 @@ router.put('/profile', isAuth, upload.single('image'), async (req, res) => {
       if (req.body.password) {
         user.password = bcrypt.hashSync(req.body.password, 8);
       }
-      user.image = req.file.path;
-      const updatedUser = await user.save();
+      if (req.file) {
+        user.image = req.file.path;
+      }
+      const updatedUser = await User.findByIdAndUpdate(req.id, user, {
+        useFindAndModify: false, new: true
+      });
       res.status(201).json(jsonResponse(updatedUser, "Update profile successful"));
+    } else {
+      res.status(401).json(jsonResponse(null, "User not found"));
     }
   } catch (err) {
     console.log(err);

@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const data = require('../data');
-const utils = require('../utils');
+const { isAuth, jsonResponse } = require('../utils');
 
 const Recipe = require('../models/recipeModel');
 const RecipeIngredient = require('../models/recipeIngredientModel');
-const { isAuth, jsonResponse } = require('../utils');
 
-router.get('/seed/recipes', isAuth, async (req, res) => {
+router.get('/seed/recipes', async (req, res) => {
     await Recipe.deleteMany({});
     data.recipes.forEach((element) => {
         element.createdBy = req.id;
@@ -16,6 +15,7 @@ router.get('/seed/recipes', isAuth, async (req, res) => {
     res.send({ createdRecipes });
 });
 
+//get all recipes (feed)
 router.get('/', async (req, res) => {
     try {
         const recipes = await Recipe.find().populate({ path: 'createdBy', select: 'firstName -_id' });
@@ -32,6 +32,24 @@ router.get('/', async (req, res) => {
     }
 });
 
+//get all my recipes
+router.get('/myrecipes', isAuth, async (req, res) => {
+    try {
+        const recipes = await Recipe.find({createdBy: req.id}).populate({ path: 'createdBy', select: 'firstName -_id' });
+        if (recipes.length > 0) {
+            res.status(201).json(jsonResponse(recipes, "Recipes retreival successful"));
+        }
+        else {
+            res.status(401).json(jsonResponse(null, "No recipes found"));
+        }
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json(jsonResponse(null, err.message));
+    }
+});
+
+//create recipe
 router.post('/add', isAuth, async (req, res) => {
     try {
         if (req.body.title && req.body.duration && req.body.instructions) {
@@ -59,7 +77,7 @@ router.post('/add', isAuth, async (req, res) => {
     }
 });
 
-router.get('/:id', isAuth, async (req, res) => {
+router.get('/:id', async (req, res) => {
     try {
         const recipe = await Recipe.findById(req.params.id).populate('createdBy');
         if (recipe) {
@@ -102,7 +120,7 @@ router.put('/:id', isAuth, async (req, res) => {
             const recipe = await Recipe.findById(id);
             res.status(201).json(jsonResponse(recipe, "Recipe has been updated"));
         } else {
-            res.status(401).json(jsonResponse(null, "You do not have permission to update the recipe!"));
+            res.status(401).json(jsonResponse(null, "You do not have permission to update the recipe"));
         }
     } catch (err) {
         console.log(err);
@@ -111,13 +129,17 @@ router.put('/:id', isAuth, async (req, res) => {
 });
 
 //delete Recipe
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', isAuth, async (req, res) => {
     try {
         const recipe = await Recipe.findById(req.params.id);
 
         if (recipe) {
-            await recipe.remove();
-            res.status(401).json(jsonResponse(recipe, "Recipe removed"));
+            if (recipe.createdBy == req.id) {
+                await recipe.remove();
+                res.status(201).json(jsonResponse(recipe, "Recipe removed"));
+            } else{
+                res.status(401).json(jsonResponse(null, "You do not have permission to delete the recipe"));
+            }
         } else {
             res.status(401).json(jsonResponse(null, "Recipe not found"));
         }
