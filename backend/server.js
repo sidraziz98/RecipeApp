@@ -22,7 +22,7 @@ app.use(express.static('backend/uploads'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 //process.env.MONGODB_URL || 
-mongoose.connect("mongodb://localhost/RecipeDB", {
+mongoose.connect(process.env.MONGODB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 },
