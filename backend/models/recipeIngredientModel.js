@@ -10,6 +10,9 @@ const recipeIngredientSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Recipe',
         },
+        amount: {
+            type: String
+        }
     },
     {
         timestamps: true,

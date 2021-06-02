@@ -75,7 +75,29 @@ const data = {
             ],
         },
     ],
-    
+    ingredients: [
+        { name: "Oil" },
+        { name: "Soya Sauce" },
+        { name: "Bread" },
+        { name: "Egg" },
+        { name: "Chicken" },
+        { name: "Flour" },
+        { name: "Mayonnaise" },
+        { name: "Iceberg Lettuce" },
+        { name: "Cheese" },
+        { name: "Rice" },
+        { name: "Water" },
+        { name: "Butter" },
+        { name: "Salt" },
+        { name: "Pepper" },
+        { name: "Oregano" },
+        { name: "Basil" },
+        { name: "Garlic" },
+        { name: "Milk" },
+        { name: "Pasta" },
+        { name: "Parsley" },
+    ]
+
 };
 
 module.exports = data;

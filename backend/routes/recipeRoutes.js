@@ -116,11 +116,11 @@ router.get('/savedrecipes', isAuth, async (req, res) => {
     }
 });
 
-router.get('/:id',isAuth, async (req, res) => {
+router.get('/:id', isAuth, async (req, res) => {
     try {
         const recipe = await Recipe.findById(req.params.id).populate('createdBy');
         if (recipe) {
-            const ingredients = await RecipeIngredient.find({ userId: req.id });
+            const ingredients = await RecipeIngredient.find({ recipe: req.params.id }).select("ingredient amount -_id").populate({path: "ingredient", select: "name -_id"});
             const sendRecipe = {
                 _id: recipe._id,
                 title: recipe.title,

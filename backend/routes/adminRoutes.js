@@ -148,6 +148,33 @@ router.get('/ingredient/:id', async (req, res) => {
     }
 });
 
+// router.get('/seed/ingredients', async (req, res) => {
+//     await Ingredient.deleteMany({});
+//     const createdIngredients = await Ingredient.insertMany(data.ingredients);
+//     res.send({ createdIngredients });
+// });
+
+//get ingredient by id
+router.put('/ingredient/:id', async (req, res) => {
+    try {
+        const ingredient = await Ingredient.findById(req.params.id);
+        if (ingredient) {
+            const update = req.body;
+            const updatedIngredient = await Ingredient.findByIdAndUpdate(req.params.id, update, {
+                useFindAndModify: false, new:true
+            });
+            // const recipe = await Recipe.findById(id);
+            res.status(201).json(jsonResponse(updatedIngredient, "Ingredient has been updated"));
+        }
+        else {
+            res.status(401).json(jsonResponse(null, "Ingredient not found"));
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(jsonResponse(null, err.message));
+    }
+});
+
 //get ingredients
 router.get('/ingredient/', async (req, res) => {
     try {
