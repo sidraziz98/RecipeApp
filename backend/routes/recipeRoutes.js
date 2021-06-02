@@ -5,6 +5,7 @@ const { isAuth, jsonResponse } = require('../utils');
 
 const Recipe = require('../models/recipeModel');
 const RecipeIngredient = require('../models/recipeIngredientModel');
+const Favorite = require('../models/favoriteModel');
 
 router.get('/seed/recipes', async (req, res) => {
     await Recipe.deleteMany({});
@@ -77,7 +78,45 @@ router.post('/add', isAuth, async (req, res) => {
     }
 });
 
-router.get('/:id', async (req, res) => {
+router.post('/save', isAuth, async (req, res) => {
+    try {
+        if (req.body.id) {
+            const favoriteRecipe = new Favorite(
+                {
+                    user: req.id,
+                    recipe: req.body.id,
+                }
+            );
+            const savedRecipe = await favoriteRecipe.save();
+            res.status(201).json(jsonResponse(savedRecipe, "Recipe saved successfully"))
+        }
+        else {
+            res.status(401).json(jsonResponse(null, "Incomplete recipe details."))
+        }
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json(jsonResponse(null, err.message));
+    }
+});
+
+router.get('/savedrecipes', isAuth, async (req, res) => {
+    try {
+        const recipes = await Favorite.find({user: req.id}).select("recipe -_id").populate("recipe");
+        if (recipes) {
+            res.status(201).json(jsonResponse(recipes, "Recipes retreival successful"));
+        }
+        else {
+            res.status(401).json(jsonResponse(null, "No recipes found"));
+        }
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json(jsonResponse(null, err.message));
+    }
+});
+
+router.get('/:id',isAuth, async (req, res) => {
     try {
         const recipe = await Recipe.findById(req.params.id).populate('createdBy');
         if (recipe) {
@@ -148,5 +187,7 @@ router.delete('/:id', isAuth, async (req, res) => {
         res.status(500).json(jsonResponse(null, err.message));
     }
 });
+
+
 
 module.exports = router;

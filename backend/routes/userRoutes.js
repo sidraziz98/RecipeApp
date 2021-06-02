@@ -103,6 +103,8 @@ router.post("/login", async (req, res) => {
             token: generateToken(user._id),
           };
           res.status(201).json(jsonResponse(sendUser, "Login Successful"));
+        } else {
+          res.status(401).send(jsonResponse(null, 'Invalid email or password'));
         }
       }
       else {
@@ -146,15 +148,22 @@ router.put('/profile', isAuth, upload.single('image'), async (req, res) => {
     if (user) {
       user.firstName = req.body.firstName || user.firstName;
       user.lastName = req.body.lastName || user.lastName;
-      if (req.body.password) {
-        user.password = bcrypt.hashSync(req.body.password, 8);
-      }
-      if (req.file) {
-        user.image = req.file.path;
+      user.image = req.file ? req.file.path : user.image;
+      if (req.body.newPassword && req.body.oldPassword) {
+        const validPass = bcrypt.compareSync(
+          req.body.oldPassword,
+          user.password
+        );
+        if (validPass) {
+          user.password = bcrypt.hashSync(req.body.newPassword, 8);
+        } else {
+          res.status(401).json(jsonResponse(null, "Incorrect password"));
+          return;
+        }
       }
       const updatedUser = await User.findByIdAndUpdate(req.id, user, {
         useFindAndModify: false, new: true
-      });
+      }).select(" firstName lastName email ");
       res.status(201).json(jsonResponse(updatedUser, "Update profile successful"));
     } else {
       res.status(401).json(jsonResponse(null, "User not found"));

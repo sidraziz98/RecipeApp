@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const userRoutes = require('./routes/userRoutes');
 const recipeRoutes = require('./routes/recipeRoutes');
+const recipeIngredientRoutes = require('./routes/recipeIngredientRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const cors = require('cors');
 
@@ -20,8 +21,8 @@ app.use(
 app.use(express.static('backend/uploads'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-mongoose.connect(process.env.MONGODB_URL || "mongodb://localhost/RecipeDB", {
+//process.env.MONGODB_URL || 
+mongoose.connect("mongodb://localhost/RecipeDB", {
     useNewUrlParser: true,
     useUnifiedTopology: true
 },
@@ -34,6 +35,7 @@ mongoose.connect(process.env.MONGODB_URL || "mongodb://localhost/RecipeDB", {
 );
 
 app.use('/api/user', userRoutes);
+app.use('/api/recipeIngredient', recipeIngredientRoutes);
 app.use('/api/recipe', recipeRoutes);
 app.use('/api/admin', adminRoutes);
 
