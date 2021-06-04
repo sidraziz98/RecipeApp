@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
             res.status(201).json(jsonResponse(recipes, "Recipes retreival successful"));
         }
         else {
-            res.status(401).json(jsonResponse(null, "No recipes found"));
+            res.status(201).json(jsonResponse(null, "No recipes found"));
         }
     }
     catch (err) {
@@ -41,7 +41,7 @@ router.get('/myrecipes', isAuth, async (req, res) => {
             res.status(201).json(jsonResponse(recipes, "Recipes retreival successful"));
         }
         else {
-            res.status(401).json(jsonResponse(null, "No recipes found"));
+            res.status(201).json(jsonResponse(null, "No recipes found"));
         }
     }
     catch (err) {
@@ -69,7 +69,7 @@ router.post('/add', isAuth, async (req, res) => {
             res.status(201).json(jsonResponse(createdRecipe, "Recipe created successfully"))
         }
         else {
-            res.status(401).json(jsonResponse(null, "Incomplete recipe details."))
+            res.status(201).json(jsonResponse(null, "Incomplete recipe details."))
         }
     }
     catch (err) {
@@ -91,7 +91,7 @@ router.post('/save', isAuth, async (req, res) => {
             res.status(201).json(jsonResponse(savedRecipe, "Recipe saved successfully"))
         }
         else {
-            res.status(401).json(jsonResponse(null, "Incomplete recipe details."))
+            res.status(201).json(jsonResponse(null, "Incomplete recipe details."))
         }
     }
     catch (err) {
@@ -107,7 +107,7 @@ router.get('/savedrecipes', isAuth, async (req, res) => {
             res.status(201).json(jsonResponse(recipes, "Recipes retreival successful"));
         }
         else {
-            res.status(401).json(jsonResponse(null, "No recipes found"));
+            res.status(201).json(jsonResponse(null, "No recipes found"));
         }
     }
     catch (err) {
@@ -136,7 +136,7 @@ router.get('/:id', isAuth, async (req, res) => {
             res.status(201).json(jsonResponse(sendRecipe, "Recipe retreival successful"));
         }
         else {
-            res.status(401).send(jsonResponse(null, 'Recipe not found'));
+            res.status(201).send(jsonResponse(null, 'Recipe not found'));
         }
     }
     catch (err) {
@@ -159,7 +159,7 @@ router.put('/:id', isAuth, async (req, res) => {
             const recipe = await Recipe.findById(id);
             res.status(201).json(jsonResponse(recipe, "Recipe has been updated"));
         } else {
-            res.status(401).json(jsonResponse(null, "You do not have permission to update the recipe"));
+            res.status(201).json(jsonResponse(null, "You do not have permission to update the recipe"));
         }
     } catch (err) {
         console.log(err);
@@ -177,10 +177,10 @@ router.delete('/:id', isAuth, async (req, res) => {
                 await recipe.remove();
                 res.status(201).json(jsonResponse(recipe, "Recipe removed"));
             } else{
-                res.status(401).json(jsonResponse(null, "You do not have permission to delete the recipe"));
+                res.status(201).json(jsonResponse(null, "You do not have permission to delete the recipe"));
             }
         } else {
-            res.status(401).json(jsonResponse(null, "Recipe not found"));
+            res.status(201).json(jsonResponse(null, "Recipe not found"));
         }
     } catch (err) {
         console.log(err);

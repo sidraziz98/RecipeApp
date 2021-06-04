@@ -74,7 +74,7 @@ router.post("/signup", upload.single('image'), async (req, res) => {
       }
     }
     else {
-      res.status(401).json(jsonResponse(null, "Incomplete profile details."));
+      res.status(201).json(jsonResponse(null, "Incomplete profile details."));
     }
   }
   catch (err) {
@@ -104,15 +104,15 @@ router.post("/login", async (req, res) => {
           };
           res.status(201).json(jsonResponse(sendUser, "Login Successful"));
         } else {
-          res.status(401).send(jsonResponse(null, 'Invalid email or password'));
+          res.status(201).send(jsonResponse(null, 'Invalid email or password'));
         }
       }
       else {
-        res.status(401).send(jsonResponse(null, 'Invalid email or password'));
+        res.status(201).send(jsonResponse(null, 'Invalid email or password'));
       }
     }
     else {
-      res.status(401).send(jsonResponse(null, 'Email or password missing'));
+      res.status(201).send(jsonResponse(null, 'Email or password missing'));
     }
   } catch (err) {
     console.log(err);
@@ -134,7 +134,7 @@ router.get('/profile', isAuth, async (req, res) => {
       };
       res.status(201).json(jsonResponse(sendUser, "Profile retreival successful"));
     } else {
-      res.status(401).send(jsonResponse(null, 'User not found'));
+      res.status(201).send(jsonResponse(null, 'User not found'));
     }
   } catch (err) {
     console.log(err);
@@ -157,7 +157,7 @@ router.put('/profile', isAuth, upload.single('image'), async (req, res) => {
         if (validPass) {
           user.password = bcrypt.hashSync(req.body.newPassword, 8);
         } else {
-          res.status(401).json(jsonResponse(null, "Incorrect password"));
+          res.status(201).json(jsonResponse(null, "Incorrect password"));
           return;
         }
       }
@@ -166,7 +166,7 @@ router.put('/profile', isAuth, upload.single('image'), async (req, res) => {
       }).select(" firstName lastName email ");
       res.status(201).json(jsonResponse(updatedUser, "Update profile successful"));
     } else {
-      res.status(401).json(jsonResponse(null, "User not found"));
+      res.status(201).json(jsonResponse(null, "User not found"));
     }
   } catch (err) {
     console.log(err);

@@ -15,10 +15,10 @@ const isAdmin = async (req, res, next) => {
             req.isAdmin = true;
             next();
         }else{
-            res.status(401).send(jsonResponse(null, 'You do not have permission'));
+            res.status(201).send(jsonResponse(null, 'You do not have permission'));
         }
     }else{
-        res.status(401).send(jsonResponse(null, 'User with this id does not exist'));
+        res.status(201).send(jsonResponse(null, 'User with this id does not exist'));
     }
 };
 
@@ -29,7 +29,7 @@ router.get('/user/', isAuth, isAdmin, async (req, res) => {
             res.status(201).json(jsonResponse(users, "Users retreival successful"));
         }
         else {
-            res.status(401).json(jsonResponse(null, "No users found"));
+            res.status(201).json(jsonResponse(null, "No users found"));
         }
     }catch(err){
         console.log(err);
@@ -52,7 +52,7 @@ router.post('/category/create', isAuth, async (req, res) => {
                 return res.status(201).json(jsonResponse(newCategory, "Category Created Successfully"));
             }
         } else {
-            res.status(401).json(jsonResponse(null, "Incomplete details"));
+            res.status(201).json(jsonResponse(null, "Incomplete details"));
         }
     } catch (err) {
         console.log(err);
@@ -68,7 +68,7 @@ router.get('/category/:id', async (req, res) => {
             res.status(201).json(jsonResponse(category, "Category retreival successful"));
         }
         else {
-            res.status(401).json(jsonResponse(null, "Category not found"));
+            res.status(201).json(jsonResponse(null, "Category not found"));
         }
     } catch (err) {
         console.log(err);
@@ -84,7 +84,7 @@ router.get('/category/', async (req, res) => {
             res.status(201).json(jsonResponse(categories, "Categories retreival successful"));
         }
         else {
-            res.status(401).json(jsonResponse(null, "No categories found"));
+            res.status(201).json(jsonResponse(null, "No categories found"));
         }
     } catch (err) {
         console.log(err);
@@ -99,9 +99,9 @@ router.delete('/category/:id', isAuth, isAdmin, async (req, res) => {
 
         if (category) {
             await category.remove();
-            res.status(401).json(jsonResponse(category, "Category removed"));
+            res.status(201).json(jsonResponse(category, "Category removed"));
         } else {
-            res.status(401).json(jsonResponse(null, "Category not found"));
+            res.status(201).json(jsonResponse(null, "Category not found"));
         }
     } catch (err) {
         console.log(err);
@@ -124,7 +124,7 @@ router.post('/ingredient/create', isAuth, async (req, res) => {
                 return res.status(201).json(jsonResponse(newIngredient, "Ingredient Created Successfully"));
             }
         } else {
-            res.status(401).json(jsonResponse(null, "Incomplete details"));
+            res.status(201).json(jsonResponse(null, "Incomplete details"));
         }
     } catch (err) {
         console.log(err);
@@ -140,7 +140,7 @@ router.get('/ingredient/:id', async (req, res) => {
             res.status(201).json(jsonResponse(ingredient, "Ingredient retreival successful"));
         }
         else {
-            res.status(401).json(jsonResponse(null, "Ingredient not found"));
+            res.status(201).json(jsonResponse(null, "Ingredient not found"));
         }
     } catch (err) {
         console.log(err);
@@ -167,7 +167,7 @@ router.put('/ingredient/:id', async (req, res) => {
             res.status(201).json(jsonResponse(updatedIngredient, "Ingredient has been updated"));
         }
         else {
-            res.status(401).json(jsonResponse(null, "Ingredient not found"));
+            res.status(201).json(jsonResponse(null, "Ingredient not found"));
         }
     } catch (err) {
         console.log(err);
@@ -183,7 +183,7 @@ router.get('/ingredient/', async (req, res) => {
             res.status(201).json(jsonResponse(ingredients, "Ingredients retreival successful"));
         }
         else {
-            res.status(401).json(jsonResponse(null, "No ingredients found"));
+            res.status(201).json(jsonResponse(null, "No ingredients found"));
         }
     } catch (err) {
         console.log(err);
@@ -198,9 +198,9 @@ router.delete('/ingredient/:id', isAuth, isAdmin, async (req, res) => {
 
         if (ingredient) {
             await ingredient.remove();
-            res.status(401).json(jsonResponse(ingredient, "Ingredient removed"));
+            res.status(201).json(jsonResponse(ingredient, "Ingredient removed"));
         } else {
-            res.status(401).json(jsonResponse(null, "Ingredient not found"));
+            res.status(201).json(jsonResponse(null, "Ingredient not found"));
         }
     } catch (err) {
         console.log(err);

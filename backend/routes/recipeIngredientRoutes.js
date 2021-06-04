@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
             res.status(201).json(jsonResponse(recipeIngredients, "Ingredients of recipes retreived successfully"));
         }
         else {
-            res.status(401).json(jsonResponse(null, "No ingredients found"));
+            res.status(201).json(jsonResponse(null, "No ingredients found"));
         }
     }
     catch (err) {
@@ -38,7 +38,7 @@ router.post('/add', async (req, res) => {
             res.status(201).json(jsonResponse(createdRecipeIngredient, "Recipe ingredient created successfully"))
         }
         else {
-            res.status(401).json(jsonResponse(null, "Incomplete details."))
+            res.status(201).json(jsonResponse(null, "Incomplete details."))
         }
     }
     catch (err) {
@@ -60,7 +60,7 @@ router.put('/:id', async (req, res) => {
             });
             res.status(201).json(jsonResponse(updatedRecipeIngredient, "Ingredient in recipe has been updated"));
         } else {
-            res.status(401).json(jsonResponse(null, "Ingredient not found in the recipe"));
+            res.status(201).json(jsonResponse(null, "Ingredient not found in the recipe"));
         }
     } catch (err) {
         console.log(err);
