@@ -70,7 +70,15 @@ router.post("/signup", upload.single('image'), async (req, res) => {
           user.image = req.file.path;
         }
         const createdUser = await user.save();
-        res.status(201).json(jsonResponse(createdUser, "Signup Successful"));
+        const sendUser = {
+          _id: createdUser._id,
+          firstName: createdUser.firstName,
+          lastName: createdUser.lastName,
+          email: createdUser.email,
+          image: createdUser.image,
+          token: generateToken(createdUser._id),
+        };
+        res.status(201).json(jsonResponse(sendUser, "Signup Successful"));
       }
     }
     else {
@@ -97,7 +105,6 @@ router.post("/login", async (req, res) => {
             _id: user._id,
             firstName: user.firstName,
             lastName: user.lastName,
-            userRole: user.userRole,
             email: user.email,
             image: user.image,
             token: generateToken(user._id),
