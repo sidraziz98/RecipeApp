@@ -25,17 +25,22 @@ router.get('/', async (req, res) => {
 // @route   POST /api/recipeIngredient/add
 router.post('/add', async (req, res) => {
     try {
-        if (req.body.recipe && req.body.ingredient) {
-            const recipeIngredient = new RecipeIngredient(
-                {
-                    recipe: req.body.recipe,
-                    ingredient: req.body.ingredient,
-                }
-            );
-            const created = await recipeIngredient.save();
-            
-            const createdRecipeIngredient = await RecipeIngredient.findById(created._id).populate("recipe")
-            res.status(201).json(jsonResponse(createdRecipeIngredient, "Recipe ingredient created successfully"))
+        if (req.body.recipe && req.body.ingredient && req.body.amount) {
+            const exists = await RecipeIngredient.findOne({ recipe: req.body.recipe, ingredient: req.body.ingredient });
+            if (exists) {
+                res.status(201).json(jsonResponse(null, "Ingredient already added in recipe"));
+            }
+            else {
+                const recipeIngredient = new RecipeIngredient(
+                    {
+                        recipe: req.body.recipe,
+                        ingredient: req.body.ingredient,
+                        amount: req.body.amount
+                    }
+                );
+                const createdRecipeIngredient = await recipeIngredient.save();
+                res.status(201).json(jsonResponse(createdRecipeIngredient, "Recipe ingredient created successfully"));
+            }
         }
         else {
             res.status(201).json(jsonResponse(null, "Incomplete details."))
@@ -56,7 +61,7 @@ router.put('/:id', async (req, res) => {
         if (recipeIngredient) {
             const update = req.body;
             const updatedRecipeIngredient = await RecipeIngredient.findByIdAndUpdate(id, update, {
-                useFindAndModify: false, new:true
+                useFindAndModify: false, new: true
             });
             res.status(201).json(jsonResponse(updatedRecipeIngredient, "Ingredient in recipe has been updated"));
         } else {

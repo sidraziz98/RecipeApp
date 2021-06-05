@@ -5,13 +5,15 @@ const recipeIngredientSchema = new mongoose.Schema(
         ingredient: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Ingredient',
+            required: true
         },
         recipe: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Recipe',
+            required: true
         },
         amount: {
-            type: String
+            type: String, required: true
         }
     },
     {

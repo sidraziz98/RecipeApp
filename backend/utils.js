@@ -17,7 +17,7 @@ const isAuth = (req, res, next) => {
             process.env.JWT_SECRET,
             (err, decode) => {
                 if (err) {
-                    res.status(401).send(jsonResponse(null, 'Invalid Token' ));
+                    res.status(201).send(jsonResponse(null, 'Invalid Token' ));
                 } else {
                     req.id = decode.id;
                     next();
@@ -25,7 +25,7 @@ const isAuth = (req, res, next) => {
             }
         );
     } else {
-        res.status(401).send(jsonResponse(null, 'No Token' ));
+        res.status(201).send(jsonResponse(null, 'No Token' ));
     }
 };
 

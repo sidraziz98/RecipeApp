@@ -5,6 +5,8 @@ const userRoutes = require('./routes/userRoutes');
 const recipeRoutes = require('./routes/recipeRoutes');
 const recipeIngredientRoutes = require('./routes/recipeIngredientRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const favoriteRoutes = require('./routes/favoriteRoutes');
+const ratingRoutes = require('./routes/ratingRoutes');
 const cors = require('cors');
 
 dotenv.config();
@@ -38,6 +40,8 @@ app.use('/api/user', userRoutes);
 app.use('/api/recipeIngredient', recipeIngredientRoutes);
 app.use('/api/recipe', recipeRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/favorite', favoriteRoutes);
+app.use('/api/rate', ratingRoutes);
 
 app.get('/', (req, res) => {
     res.send('Server is ready');

@@ -55,7 +55,7 @@ router.post("/signup", upload.single('image'), async (req, res) => {
     if (req.body.firstName && req.body.lastName && req.body.email && req.body.password) {
       const userExist = await User.findOne({ email: req.body.email });
       if (userExist) {
-        res.status(401).json(jsonResponse(null, "User with this email already exists."));
+        res.status(201).json(jsonResponse(null, "User with this email already exists."));
       } else {
         const user = new User(
           {
@@ -143,7 +143,7 @@ router.get('/profile', isAuth, async (req, res) => {
 });
 
 router.put('/profile', isAuth, upload.single('image'), async (req, res) => {
-  try {
+  try {console.log("in profile");
     const user = await User.findById(req.id);
     if (user) {
       user.firstName = req.body.firstName || user.firstName;

@@ -40,13 +40,13 @@ router.get('/user/', isAuth, isAdmin, async (req, res) => {
 //create category
 router.post('/category/create', isAuth, async (req, res) => {
     try {
-        if (req.body.category) {
-            const categoryExist = await Category.findOne({ category: req.body.category });
+        if (req.body.name) {
+            const categoryExist = await Category.findOne({ name: req.body.name });
             if (categoryExist) {
                 res.status(201).json(jsonResponse(null, "Category already exists"));
             } else {
                 const category = new Category({
-                    category: req.body.category
+                    name: req.body.name
                 });
                 const newCategory = await category.save();
                 return res.status(201).json(jsonResponse(newCategory, "Category Created Successfully"));
@@ -112,13 +112,13 @@ router.delete('/category/:id', isAuth, isAdmin, async (req, res) => {
 //create ingredient
 router.post('/ingredient/create', isAuth, async (req, res) => {
     try {
-        if (req.body.ingredient) {
-            const ingredientExist = await Ingredient.findOne({ ingredient: req.body.ingredient });
+        if (req.body.name) {
+            const ingredientExist = await Ingredient.findOne({ name: req.body.name });
             if (ingredientExist) {
                 res.status(201).json(jsonResponse(null, "Ingredient already exists"));
             } else {
                 const ingredient = new Ingredient({
-                    ingredient: req.body.ingredient
+                    name: req.body.name
                 });
                 const newIngredient = await ingredient.save();
                 return res.status(201).json(jsonResponse(newIngredient, "Ingredient Created Successfully"));

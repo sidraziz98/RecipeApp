@@ -5,7 +5,6 @@ const { isAuth, jsonResponse } = require('../utils');
 
 const Recipe = require('../models/recipeModel');
 const RecipeIngredient = require('../models/recipeIngredientModel');
-const Favorite = require('../models/favoriteModel');
 
 router.get('/seed/recipes', async (req, res) => {
     await Recipe.deleteMany({});
@@ -16,7 +15,8 @@ router.get('/seed/recipes', async (req, res) => {
     res.send({ createdRecipes });
 });
 
-//get all recipes (feed)
+// @desc    get all recipes (feed)
+// @route   GET /api/recipe/
 router.get('/', async (req, res) => {
     try {
         const recipes = await Recipe.find().populate({ path: 'createdBy', select: 'firstName -_id' });
@@ -33,10 +33,11 @@ router.get('/', async (req, res) => {
     }
 });
 
-//get all my recipes
+// @desc    get all my Recipes
+// @route   GET /api/recipe/myrecipes
 router.get('/myrecipes', isAuth, async (req, res) => {
     try {
-        const recipes = await Recipe.find({createdBy: req.id}).populate({ path: 'createdBy', select: 'firstName -_id' });
+        const recipes = await Recipe.find({ createdBy: req.id }).populate({ path: 'createdBy', select: 'firstName -_id' });
         if (recipes.length > 0) {
             res.status(201).json(jsonResponse(recipes, "Recipes retreival successful"));
         }
@@ -50,7 +51,8 @@ router.get('/myrecipes', isAuth, async (req, res) => {
     }
 });
 
-//create recipe
+// @desc    create Recipe
+// @route   GET /api/recipe/add
 router.post('/add', isAuth, async (req, res) => {
     try {
         if (req.body.title && req.body.duration && req.body.instructions) {
@@ -78,49 +80,13 @@ router.post('/add', isAuth, async (req, res) => {
     }
 });
 
-router.post('/save', isAuth, async (req, res) => {
-    try {
-        if (req.body.id) {
-            const favoriteRecipe = new Favorite(
-                {
-                    user: req.id,
-                    recipe: req.body.id,
-                }
-            );
-            const savedRecipe = await favoriteRecipe.save();
-            res.status(201).json(jsonResponse(savedRecipe, "Recipe saved successfully"))
-        }
-        else {
-            res.status(201).json(jsonResponse(null, "Incomplete recipe details."))
-        }
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).json(jsonResponse(null, err.message));
-    }
-});
-
-router.get('/savedrecipes', isAuth, async (req, res) => {
-    try {
-        const recipes = await Favorite.find({user: req.id}).select("recipe -_id").populate("recipe");
-        if (recipes) {
-            res.status(201).json(jsonResponse(recipes, "Recipes retreival successful"));
-        }
-        else {
-            res.status(201).json(jsonResponse(null, "No recipes found"));
-        }
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).json(jsonResponse(null, err.message));
-    }
-});
-
+// @desc    Get Recipe by Id
+// @route   GET /api/recipe/:id
 router.get('/:id', isAuth, async (req, res) => {
     try {
         const recipe = await Recipe.findById(req.params.id).populate('createdBy');
         if (recipe) {
-            const ingredients = await RecipeIngredient.find({ recipe: req.params.id }).select("ingredient amount -_id").populate({path: "ingredient", select: "name -_id"});
+            const ingredients = await RecipeIngredient.find({ recipe: req.params.id }).select("ingredient amount -_id").populate({ path: "ingredient", select: "name -_id" });
             const sendRecipe = {
                 _id: recipe._id,
                 title: recipe.title,
@@ -146,7 +112,7 @@ router.get('/:id', isAuth, async (req, res) => {
 });
 
 // @desc    Update Recipe by Id
-// @route   PUT /api/tag/:id
+// @route   PUT /api/recipe/:id
 router.put('/:id', isAuth, async (req, res) => {
     try {
         const id = req.params.id;
@@ -167,16 +133,16 @@ router.put('/:id', isAuth, async (req, res) => {
     }
 });
 
-//delete Recipe
+// @desc    delete Recipe by Id
+// @route   DELETE /api/recipe/:id
 router.delete('/:id', isAuth, async (req, res) => {
     try {
         const recipe = await Recipe.findById(req.params.id);
-
         if (recipe) {
             if (recipe.createdBy == req.id) {
                 await recipe.remove();
                 res.status(201).json(jsonResponse(recipe, "Recipe removed"));
-            } else{
+            } else {
                 res.status(201).json(jsonResponse(null, "You do not have permission to delete the recipe"));
             }
         } else {
@@ -187,7 +153,5 @@ router.delete('/:id', isAuth, async (req, res) => {
         res.status(500).json(jsonResponse(null, err.message));
     }
 });
-
-
 
 module.exports = router;

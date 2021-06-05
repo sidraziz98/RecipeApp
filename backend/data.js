@@ -96,6 +96,22 @@ const data = {
         { name: "Milk" },
         { name: "Pasta" },
         { name: "Parsley" },
+        { name: "Mutton" },
+        { name: "Cinnamon" },
+        { name: "Tomato" },
+        { name: "Chinese Egg Noodles" },
+        { name: "Sugar" },
+        { name: "Ginger" },
+        { name: "Vanilla Extract" },
+        { name: "Baking Soda" },
+        { name: "Chocolate Chips" },
+        { name: "All-purpose Flour" },
+        { name: "Biscuits" },
+        { name: "Lemon" },
+        { name: "Soured Cream" },
+        { name: "Beef" },
+        { name: "Cornstarch" },
+        { name: "Scallions" },
     ]
 
 };
