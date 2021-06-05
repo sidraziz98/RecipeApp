@@ -62,7 +62,7 @@ router.post('/add', isAuth, async (req, res) => {
                     duration: req.body.duration,
                     description: req.body.description,
                     instructions: req.body.instructions,
-                    // image: NULL || req.file.path,
+                    image: req.body.image,
                     createdBy: req.id,
                     isPublic: req.body.isPublic
                 }
