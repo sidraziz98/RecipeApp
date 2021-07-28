@@ -15,13 +15,42 @@ router.get('/seed/recipes', async (req, res) => {
     res.send({ createdRecipes });
 });
 
+const getIngredients = async (id) => {
+    const ingredients = await RecipeIngredient.find({ recipe: id }).select("ingredient -_id").populate({ path: "ingredient", select: "name -_id" });
+    if (ingredients) {
+        const allIngredients = ingredients.map((i) => {
+            return i.ingredient.name;
+        })
+        return allIngredients;
+    } else {
+        return null;
+    }
+};
+
 // @desc    get all recipes (feed)
 // @route   GET /api/recipe/
 router.get('/', async (req, res) => {
     try {
         const recipes = await Recipe.find().populate({ path: 'createdBy', select: 'firstName -_id' });
         if (recipes.length > 0) {
-            res.status(201).json(jsonResponse(recipes, "Recipes retreival successful"));
+            const getRecipes = Promise.all(
+                recipes.map(async (recipe) => {
+                    const ingredients = await getIngredients(recipe._id);
+                    const sendRecipe = {
+                        _id: recipe._id,
+                        title: recipe.title,
+                        duration: recipe.duration,
+                        description: recipe.description,
+                        ingredients: ingredients,
+                        image: recipe.image,
+                        rating: recipe.rating,
+                    };
+                    return sendRecipe;
+                })
+            );
+            const sendRecipes = await getRecipes;
+            if (sendRecipes)
+                res.status(201).json(jsonResponse(sendRecipes, "Recipes retreival successful"));
         }
         else {
             res.status(201).json(jsonResponse(null, "No recipes found"));
@@ -32,6 +61,24 @@ router.get('/', async (req, res) => {
         res.status(500).json(jsonResponse(null, err.message));
     }
 });
+
+// // @desc    get all recipes (feed)
+// // @route   GET /api/recipe/
+// router.get('/', async (req, res) => {
+//     try {
+//         const recipes = await Recipe.find().populate({ path: 'createdBy', select: 'firstName -_id' });
+//         if (recipes.length > 0) {
+//             res.status(201).json(jsonResponse(recipes, "Recipes retreival successful"));
+//         }
+//         else {
+//             res.status(201).json(jsonResponse(null, "No recipes found"));
+//         }
+//     }
+//     catch (err) {
+//         console.log(err);
+//         res.status(500).json(jsonResponse(null, err.message));
+//     }
+// });
 
 // @desc    get all my Recipes
 // @route   GET /api/recipe/myrecipes
