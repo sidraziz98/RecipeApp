@@ -48,7 +48,7 @@ const updateRecipeRating = async (rating, id) => {
         ratings.map((r) => {
             total += r.rating;
         });
-        total = (total / ratings.length);
+        total = (total / ratings.length).toFixed(2);
         const update = { rating: total };
         const updatedRecipe = await Recipe.findByIdAndUpdate(id, update, {
             useFindAndModify: false, new: true
